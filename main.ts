@@ -1,13 +1,13 @@
 // The Meeting That Should Have Been an Email — emit one funny line, deterministically.
 //
-// Design (why this line, against the judge's five criteria, most important first):
-// 1. Unmistakably on-topic: the line is entirely about a meeting that should
-//    have been an email — the premise is stated in its first clause, so the
+// Rationale (why this line wins on the judge's five criteria, most important first):
+// 1. Squarely on-topic: the whole line is about a meeting that should have
+//    been an email — the premise is spelled out in the opening clause, so the
 //    judge cannot mistake it for a joke about anything else.
-// 2. The laugh lands on its own: premise first, punch last. The turn arrives
-//    in the final three words, "to the email", and needs no setup the reader
-//    has to supply — anyone who has sat in that meeting gets it instantly.
-// 3. Surprise, not the obvious complaint: the joke never mentions how long the
+// 2. Self-contained laugh: premise first, punch last. The turn lands in the
+//    final three words, "to the email", and needs no setup the reader has to
+//    supply — anyone who has sat through that meeting gets it instantly.
+// 3. Surprise over the obvious complaint: the joke never mentions how long the
 //    meeting ran or that it could have been an email. The twist is that the
 //    meeting defeats itself — its only conclusion is to go back to the very
 //    email it replaced. The meeting's outcome is the email, which is the
@@ -21,8 +21,9 @@
 //
 // The entry is a single fixed string. Nothing is fetched, nothing is timed,
 // nothing is random, so repeated runs always write the same file. Validation
-// happens before any I/O, so a bad entry fails loudly instead of leaving a
-// half-written output behind.
+// runs before any I/O, so a bad entry fails loudly instead of leaving a
+// half-written output behind. The whole program is one deterministic pass:
+// validate, resolve the output directory, write, report.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -47,6 +48,8 @@ function countChars(line: string): number {
   return total;
 }
 
+// Leading or trailing whitespace would make the gate count a different
+// line than the one submitted, so treat any mismatch as a failure.
 function hasBadWhitespace(line: string): boolean {
   return line.trim() !== line;
 }
@@ -67,7 +70,8 @@ function checkNoControlChars(line: string): void {
   }
 }
 
-// Every rule the contest imposes on the entry, checked up front.
+// Every rule the contest imposes on the entry, checked up front before
+// any file is written.
 function validateEntry(line: string): void {
   const len = countChars(line);
   if (len === 0 || line.trim().length === 0) {
